@@ -1,6 +1,9 @@
 import ollama
 from pathlib import Path
 
+# my imports
+from storage import init_db, new_session_id, save_message, load_conversation
+
 # Load text from files
 def load_file(path: Path):
     if path.exists():
@@ -9,14 +12,19 @@ def load_file(path: Path):
         raise FileNotFoundError(f"Path not found: {path}")
 
 MODEL = "gemma2:2b"
-PERSOANLITY = Path("data/PERSONALITY.md")
+PERSOANLITY = Path("data/personality.md")
 SYSTEM_PROMPT = load_file(PERSOANLITY)
+
+init_db()
+session_id = new_session_id()
 
 messages = [
     {"role": "system", "content": SYSTEM_PROMPT}
 ]
 
-print("Starting conversation with Max. Use /bye to exit...")
+# messages += load_conversation("2026-04-17_01-59-34")
+
+print("Starting conversation with Max. Use /bye to exit...\n")
 
 while True:
     user_message = input("Mahasvin: ").strip()
@@ -32,6 +40,7 @@ while True:
         break
 
     messages.append({"role": "user", "content": user_message})
+    save_message(session_id, role="user", content=user_message)
 
     print("Max: ", end="", flush=True)
 
@@ -43,6 +52,7 @@ while True:
         agent_message += token
 
     messages.append({"role": "assistant", "content": agent_message})
+    save_message(session_id, role="assistant", content=agent_message)
 
     print()
     
