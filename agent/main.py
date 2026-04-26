@@ -2,7 +2,7 @@ import ollama
 from pathlib import Path
 
 # my imports
-from storage import init_db, new_session_id, save_message, load_conversation
+from storage import init_db, new_session_id, save_message
 
 # Load text from files
 def load_file(path: Path):
